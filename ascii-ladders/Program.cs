@@ -9,7 +9,7 @@ namespace ascii_ladders
     {
         Success = 0,
         Error = 1
-    };
+    }
 
     // define program limits
     enum LadderLimits : int
@@ -32,7 +32,7 @@ namespace ascii_ladders
         /// My intent is code the problem as a programming exercise rather
         /// than compress it for code golf.
         /// 
-        /// Quote/paraphrase from Stack Exchange:
+        /// Quoting from the original post on Stack Exchange:
         /// Given an input of two integers n and m, output an ASCII ladder of length n and size m.
         /// This is an ASCII ladder of length 3 and size 3:
         /// 
@@ -92,11 +92,48 @@ namespace ascii_ladders
             }
 
             // at this point n and m are clean and ready for use.
-
+            StringBuilder ladder = new StringBuilder();
+            ladder = BuildLadder(n, m);
+            DisplayLadder(ladder);
 
 
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
+        }
+
+        private static StringBuilder BuildLadder(int n, int m)
+        {
+            StringBuilder ladder = new StringBuilder(string.Empty);
+
+            StringBuilder rung = new StringBuilder();
+
+            // build a rung
+            rung.Append("o");
+            rung.Append('-', m);
+            rung.Append("o\n");
+
+            // for each square
+            for (int i = 0; i < n; i++)
+            {
+                // add a rung
+                ladder.Append(rung);
+                // build the middle of a square in the ladder
+                for (int j = 0; j < m; j++)
+                {
+                    ladder.Append("|");
+                    ladder.Append(' ', m);
+                    ladder.Append("|\n");
+                }
+            }
+            // one last rung on the bottom of the ladder
+            ladder.Append(rung);
+
+            return ladder;
+        }
+
+        private static void DisplayLadder(StringBuilder ladder)
+        {
+            Console.WriteLine("ASCII Ladder: \n{0}", ladder.ToString());
         }
 
         private static ExitCodes GetCommandLine(string[] args, out int n, out int m)
@@ -106,6 +143,10 @@ namespace ascii_ladders
 
             // assume success and set error code if one is found.
             ExitCodes exitcode = ExitCodes.Success;
+
+            // TODO find better way to return n and m to to caller.
+            n = 0;
+            m = 0;
 
             Console.WriteLine("Number of command line parameters = {0}",
                       args.Length);
@@ -119,46 +160,48 @@ namespace ascii_ladders
                 Console.WriteLine("Must supply two small integers: number of squares and height/width.");
                 exitcode = ExitCodes.Error;
             }
+            else
+            {
+                bool result;
+                result = ConvertToInteger(args[0], out n);
 
-            bool result;
-            result = ConvertToInteger(args[0], out n);
-            // TODO future provide specific error code to user.
-            if (!result)
-            {
-                exitcode = ExitCodes.Error;
-            }
-            else if (result && n > (int)LadderLimits.MaxSize)
-            {
-                exitcode = ExitCodes.Error;
-            }
-            else if (result && n < (int)LadderLimits.MinSize)
-            {
-                exitcode = ExitCodes.Error;
-            };
+                // TODO if error found provide specific error code to user.
 
-            result = ConvertToInteger(args[1], out m);
-            if (!result)
-            {
-                exitcode = ExitCodes.Error;
-            }
-            else if (result && m < (int)LadderLimits.MinWidth)
-            {
-                exitcode = ExitCodes.Error;
-            }
-            else if (result && m > (int)LadderLimits.MaxWidth)
-            {
-                exitcode = ExitCodes.Error;
-            }
+                if (!result)
+                {
+                    exitcode = ExitCodes.Error;
+                }
+                else if (result && n > (int)LadderLimits.MaxSize)
+                {
+                    exitcode = ExitCodes.Error;
+                }
+                else if (result && n < (int)LadderLimits.MinSize)
+                {
+                    exitcode = ExitCodes.Error;
+                };
 
+                result = ConvertToInteger(args[1], out m);
+                if (!result)
+                {
+                    exitcode = ExitCodes.Error;
+                }
+                else if (result && m < (int)LadderLimits.MinWidth)
+                {
+                    exitcode = ExitCodes.Error;
+                }
+                else if (result && m > (int)LadderLimits.MaxWidth)
+                {
+                    exitcode = ExitCodes.Error;
+                }
+            }
             return exitcode;
-
         }
 
         private static bool ConvertToInteger(string arg, out int n)
         {
             bool result = Int32.TryParse(arg, out n);
 
-            // positive integers only please
+            // positive integers only
             if (result && n < 0)
             {
                 result = false;
