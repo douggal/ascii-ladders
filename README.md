@@ -10,3 +10,5 @@ http://codegolf.stackexchange.com/questions/68952/build-ascii-ladders
 My intent is code the problem as a programming exercise and
 develop a solution rather than solve and
 compress it for code golf.
+
+5/18/2016 - version 2.0
